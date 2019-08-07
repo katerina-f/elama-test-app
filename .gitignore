@@ -1,0 +1,10 @@
+.vagrant/
+.idea/
+
+__pycache__/
+venv/
+
+*.log
+
+*.env.prod
+*.env.dev

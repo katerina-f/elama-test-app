@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+Flask-Script
+Flask-Migrate
+Flask-Assets
+jsmin
+cssmin
