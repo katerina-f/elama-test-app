@@ -3,5 +3,6 @@ Flask-SQLAlchemy
 Flask-Script
 Flask-Migrate
 Flask-Assets
+psycopg2-binary
 jsmin
 cssmin
