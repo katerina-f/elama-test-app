@@ -1,10 +1,23 @@
 from flask import Flask
+from flask import request
+from flask import render_template
 
 from test_app.user.models import User
+from test_app.post.models import Post
 
+from test_app.extensions import db
 
 def create_app():
     app = Flask(__name__)
+    app.secret_key = '478fdh5j7ghh7778548954jkd89dd9de9d9'
+
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{}:{}@{}/{}'.format(
+        'test', '1234', 'localhost', 'postgres'
+    )
+    db.init_app(app)
+
     return app
 
 
@@ -19,4 +32,17 @@ def ping():
 @app.route('/user')
 def get_user():
     user = User.query.get(1)
-    return user
+    return '{}'.format(user.email)
+
+
+@app.route('/login', methods=['GET'])
+def login():
+    return render_template('login.html')
+
+
+@app.route('/get_params', methods=['POST'])
+def get_params():
+    user = User(email=request.form['email'], password=request.form['password'])
+    db.session.add(user)
+    db.session.commit()
+    return 'USER {} added successfully'.format(user.email)
