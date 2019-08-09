@@ -16,9 +16,13 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{}:{}@{}/{}'.format(
         'test', '1234', 'localhost', 'postgres'
     )
-    db.init_app(app)
+    register_extensions(app)
 
     return app
+
+
+def register_extensions(app):
+    db.init_app(app)
 
 
 app = create_app()
@@ -31,7 +35,7 @@ def ping():
 
 @app.route('/user')
 def get_user():
-    user = User.query.get(1)
+    user = User.query.get(3)
     return '{}'.format(user.email)
 
 
