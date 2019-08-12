@@ -35,8 +35,9 @@ def ping():
 
 @app.route('/user')
 def get_user():
-    user = User.query.get(3)
-    return '{}'.format(user.email)
+    users = User.query.all()
+    list = {'{}:{}'.format(user.email, user.birth_date) for user in users}
+    return '{}'.format(list)
 
 
 @app.route('/login', methods=['GET'])
@@ -46,7 +47,7 @@ def login():
 
 @app.route('/get_params', methods=['POST'])
 def get_params():
-    user = User(email=request.form['email'], password=request.form['password'])
+    user = User(email=request.form['email'], password=request.form['password'], birth_date=request.form['birthday'])
     db.session.add(user)
     db.session.commit()
     return 'USER {} added successfully'.format(user.email)
