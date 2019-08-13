@@ -4,15 +4,16 @@ from flask import render_template
 
 from test_app.user.models import User
 from test_app.post.models import Post
+from test_app.reminder.reminder import BdayNotificator
 
 from test_app.extensions import db
+
 
 def create_app():
     app = Flask(__name__)
     app.secret_key = '478fdh5j7ghh7778548954jkd89dd9de9d9'
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{}:{}@{}/{}'.format(
         'test', '1234', 'localhost', 'postgres'
     )
@@ -51,3 +52,10 @@ def get_params():
     db.session.add(user)
     db.session.commit()
     return 'USER {} added successfully'.format(user.email)
+
+
+@app.route('/get_birthdays', methods=['GET'])
+def create_notification():
+    notificator = BdayNotificator(db, User, interval=(0, 1), app=app)
+    users_list = notificator.bd_prompt()
+    return render_template('birthdays.html', users_list=users_list)
