@@ -6,6 +6,9 @@ from flask_migrate import MigrateCommand
 from test_app.app import app
 from test_app.extensions import db
 
+from test_app.user.models import User
+from test_app.post.models import Post
+
 migrate = Migrate(app, db)
 
 manager = Manager(app)
