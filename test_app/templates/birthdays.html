@@ -1,13 +1,20 @@
-
+{% if users_list %}
 <h2>Не забудьте поздравить!!!!</h2>
 {% for day in users_list %}
-    {% if day %}
+    {% if day and day[0].days_to_birthday == 0 %}
+    Сегодня день рождения у:
+    {% for user in day %}
+        <p>{{user.name}} : {{user.bdate}}</p>
+    {% endfor %}
+    {% elif day and day[0].days_to_birthday > 0 %}
      День рождения через: {{day[0].days_to_birthday}} дней
     {% for user in day %}
         <p>{{user.name}} : {{user.bdate}}</p>
     {% endfor %}
     {% else %}
-
     {% endif %}
 {% endfor %}
+{% else %}
+<h1>{{message}}</h1>
+{% endif %}
 

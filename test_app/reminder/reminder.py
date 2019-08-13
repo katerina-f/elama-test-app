@@ -11,32 +11,33 @@ from sqlalchemy import extract
 
 class BdayNotificator:
 
-    def __init__(self, db=None, model=None, interval=(), app=None):
+    def __init__(self, db=None, model=None, interval=()):
         self.session = db.session
         self.obj = model
         self.interval = interval
-        self.app = app
 
     def find_needed_users(self, remind_date):
         date = datetime.today() + timedelta(days=remind_date)
 
-        with self.app.app_context():
-            users = self.obj.query.filter(and_(
-                extract('day', self.obj.birth_date) == date.day,
-                extract('month', self.obj.birth_date) == date.month))
+        users = self.obj.query.filter(and_(
+            extract('day', self.obj.birth_date) == date.day,
+             extract('month', self.obj.birth_date) == date.month))
 
-            if not users:
-                logger.warning('Сегодня дней рождения нет')
-                return "Именинников нет!!!"
+        if not users:
+            logger.warning('Сегодня дней рождения нет')
+            return []
 
-            users = [{'bdate': '{}'.format(user.birth_date),
+        users = [{'bdate': '{}'.format(user.birth_date),
                       'name': '{}'.format(user.email),
-                      'days_to_birthday': '{}'.format(remind_date)} for user in users]
-            return users
+                      'days_to_birthday': remind_date} for user in users]
+        return users
 
     def bd_prompt(self):
         users_list = [self.find_needed_users(date) for date in self.interval]
-        return users_list
+        if any(users_list):
+            return users_list
+        else:
+            return []
 
     def create_message(self, users):
         pass

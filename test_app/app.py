@@ -56,11 +56,11 @@ def get_params():
 
 @app.route('/get_birthdays', methods=['GET'])
 def create_notification():
-    notificator = BdayNotificator(db, User, interval=(0, 1), app=app)
+    notificator = BdayNotificator(db, User, interval=(0, 1))
     data = notificator.bd_prompt()
-    print(data)
     if any(data):
         return render_template('birthdays.html', users_list=data)
     else:
-        return False
+        message = 'Пока поздравлять некого!'
+        return render_template('birthdays.html', message=message)
 
