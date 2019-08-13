@@ -1,8 +1,13 @@
 
 <h2>Не забудьте поздравить!!!!</h2>
 {% for day in users_list %}
+    {% if day %}
      День рождения через: {{day[0].days_to_birthday}} дней
     {% for user in day %}
         <p>{{user.name}} : {{user.bdate}}</p>
     {% endfor %}
+    {% else %}
+
+    {% endif %}
 {% endfor %}
+

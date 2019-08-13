@@ -18,7 +18,7 @@ class BdayNotificator:
         self.app = app
 
     def find_needed_users(self, remind_date):
-        date = datetime.today() - timedelta(days=remind_date)
+        date = datetime.today() + timedelta(days=remind_date)
 
         with self.app.app_context():
             users = self.obj.query.filter(and_(
@@ -27,6 +27,7 @@ class BdayNotificator:
 
             if not users:
                 logger.warning('Сегодня дней рождения нет')
+                return "Именинников нет!!!"
 
             users = [{'bdate': '{}'.format(user.birth_date),
                       'name': '{}'.format(user.email),
