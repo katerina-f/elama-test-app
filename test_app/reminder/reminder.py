@@ -1,13 +1,10 @@
 from datetime import datetime
 from datetime import timedelta
-import time
 
-from flask import jsonify
-
-import schedule
 from loguru import logger
 from sqlalchemy import and_
 from sqlalchemy import extract
+
 
 class BdayNotificator:
 
@@ -19,17 +16,19 @@ class BdayNotificator:
     def find_needed_users(self, remind_date):
         date = datetime.today() + timedelta(days=remind_date)
 
-        users = self.obj.query.filter(and_(
-            extract('day', self.obj.birth_date) == date.day,
-             extract('month', self.obj.birth_date) == date.month))
+        b_day = extract('day', self.obj.birth_date)
+        b_month = extract('month', self.obj.birth_date)
+
+        users = self.obj.query.filter(and_(b_day == date.day, b_month == date.month))
 
         if not users:
             logger.warning('Сегодня дней рождения нет')
             return []
 
         users = [{'bdate': '{}'.format(user.birth_date),
-                      'name': '{}'.format(user.email),
-                      'days_to_birthday': remind_date} for user in users]
+                  'name': '{}'.format(user.email),
+                  'days_to_birthday': remind_date} for user in users]
+
         return users
 
     def bd_prompt(self):
