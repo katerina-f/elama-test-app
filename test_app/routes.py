@@ -64,7 +64,7 @@ def added_user():
 @app.route('/get_birthdays', methods=['GET'])
 @logger.catch(level='ERROR')
 def create_notification():
-    notificator = BdayNotificator(db, User, interval=(0, 1))
+    notificator = BdayNotificator(User, interval=(0, 1))
     data = notificator.bd_prompt()
     if any(data):
         return render_template('birthdays.html', users_list=data)

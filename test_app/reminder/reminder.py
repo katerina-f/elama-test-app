@@ -8,8 +8,7 @@ from sqlalchemy import extract
 
 class BdayNotificator:
 
-    def __init__(self, db=None, model=None, interval=()):
-        self.session = db.session
+    def __init__(self, model=None, interval=()):
         self.obj = model
         self.interval = interval
 
@@ -22,7 +21,6 @@ class BdayNotificator:
         users = self.obj.query.filter(and_(b_day == date.day, b_month == date.month))
 
         if not users:
-            logger.warning('Сегодня дней рождения нет')
             return []
 
         users = [{'bdate': '{}'.format(user.birth_date),
