@@ -3,6 +3,7 @@ from flask import render_template
 from flask import jsonify
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.exc import DataError
+from sqlalchemy.exc import IntegrityError
 
 from test_app.app import app
 from test_app.user.models import User
@@ -44,6 +45,9 @@ def added_user():
     except DataError as ex:
         db.session.rollback()
         return jsonify({'error': "Data Format Error"})
+    except IntegrityError as ex:
+        db.session.rollback()
+        return jsonify({'error': "User already exists"})
 
     return 'USER {} {} added successfully'.format(user.first_name, user.last_name)
 
