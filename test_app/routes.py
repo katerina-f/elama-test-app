@@ -1,5 +1,8 @@
 from flask import request
 from flask import render_template
+from flask import jsonify
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import DataError
 
 from test_app.app import app
 from test_app.user.models import User
@@ -14,24 +17,35 @@ def ping():
     return 'OK', 200
 
 
-@app.route('/user')
+@app.route('/users')
 def get_user():
-    users = User.query.all()
-    list = {'{}:{}'.format(user.email, user.birth_date) for user in users}
+    """
+    Отображает всех пользователей, находящихся в базе
+    """
+    users = User.query.order_by(User.last_name)
+    list = {'{} {}:{}'.format(user.first_name, user.last_name, user.birth_date) for user in users}
     return '{}'.format(list)
 
 
-@app.route('/login', methods=['GET'])
-def login():
-    return render_template('login.html')
+@app.route('/add_user', methods=['GET'])
+def add_user():
+    return render_template('user.html')
 
 
-@app.route('/get_params', methods=['POST'])
-def get_params():
-    user = User(email=request.form['email'], password=request.form['password'], birth_date=request.form['birthday'])
+@app.route('/added_user', methods=['POST'])
+def added_user():
+    user = User(first_name=request.form['First name'], last_name=request.form['Last name'], birth_date=request.form['birthday'])
     db.session.add(user)
-    db.session.commit()
-    return 'USER {} added successfully'.format(user.email)
+    try:
+        db.session.commit()
+    except OperationalError as ex:
+        db.session.rollback()
+        return jsonify({'error': "Bad connection. Try again later."})
+    except DataError as ex:
+        db.session.rollback()
+        return jsonify({'error': "Data Format Error"})
+
+    return 'USER {} {} added successfully'.format(user.first_name, user.last_name)
 
 
 @app.route('/get_birthdays', methods=['GET'])
