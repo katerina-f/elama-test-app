@@ -1,16 +1,18 @@
 from flask import Flask
 
-from test_app.extensions import db
+from loguru import logger
 
+from test_app.extensions import db
+from test_app.config import DevelopmentConfig
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = '478fdh5j7ghh7778548954jkd89dd9de9d9'
 
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{}:{}@{}/{}'.format(
-        'test', '1234', 'localhost', 'postgres'
-    )
+    app.config.from_object(DevelopmentConfig)
+
+    logger.start(app.config['LOGFILE'], level=app.config['LOG_LEVEL'], backtrace=app.config['LOG_BACKTRACE'], format="{time} {level} {message}",
+               rotation='1 week', catch=True)
+
     register_extensions(app)
 
     return app
