@@ -26,9 +26,9 @@ class BdayNotificator:
             return []
 
         users = [{'bdate': '{}'.format(user.birth_date),
-                  'name': '{}'.format(user.email),
+                  'first_name': '{}'.format(user.first_name),
+                  'last_name': '{}'.format(user.last_name),
                   'days_to_birthday': remind_date} for user in users]
-
         return users
 
     def bd_prompt(self):
@@ -38,8 +38,6 @@ class BdayNotificator:
         else:
             return []
 
-    def create_message(self, users):
-        pass
 
 
 # class Postman:
