@@ -1,6 +1,6 @@
-<form action="{{ url_for('get_params') }}" method="post">
-    <input type="text" value="" placeholder="Email" name="email">
-    <input type="password" value="" placeholder="Pass" name="password">
+<form action="{{ url_for('added_user') }}" method="post">
+    <input type="text" value="" placeholder="First name" name="First name">
+    <input type="text" value="" placeholder="Last name" name="Last name">
     <input type="date" value="" placeholder="Birthday" name="birthday">
-    <button type="submit">LogIn</button>
+    <button type="submit">Add user</button>
 </form>
