@@ -5,6 +5,8 @@ Flask-Migrate
 Flask-Assets
 psycopg2-binary
 schedule
+daemon
+lockfile
 loguru
 jsmin
 cssmin
