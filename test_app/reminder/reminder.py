@@ -1,18 +1,17 @@
 from datetime import datetime
 from datetime import timedelta
 
-from loguru import logger
 from sqlalchemy import and_
 from sqlalchemy import extract
 
 
-class BdayNotificator:
+class BdayFinder:
 
     def __init__(self, model=None, interval=()):
         self.obj = model
         self.interval = interval
 
-    def find_needed_users(self, remind_date):
+    def find_users_for_date(self, remind_date):
         date = datetime.today() + timedelta(days=remind_date)
 
         b_day = extract('day', self.obj.birth_date)
@@ -20,37 +19,40 @@ class BdayNotificator:
 
         users = self.obj.query.filter(and_(b_day == date.day, b_month == date.month))
 
-        if not users:
-            return []
-
         users = [{'bdate': '{}'.format(user.birth_date),
                   'first_name': '{}'.format(user.first_name),
                   'last_name': '{}'.format(user.last_name),
                   'days_to_birthday': remind_date} for user in users]
         return users
 
-    def bd_prompt(self):
-        users_list = [self.find_needed_users(date) for date in self.interval]
+    def creating_users_list(self):
+        users_list = [self.find_users_for_date(date) for date in self.interval]
         if any(users_list):
             return users_list
         else:
             return []
 
 
+class Postman:
 
-# class Postman:
-#
-#     def __init__(self, notification_time='00:00'):
-#         self.notification_time = notification_time  #<type 'str'>
-#         # self.host = app.config['HOST']
-#         # self.port = app.config['PORT']
-#
-#     def run_reminder(self, interval, db, obj):
-#         notificator = BdayNotificator(db, obj, interval)
-#         schedule.every().day.at(self.notification_time).do(notificator.bd_prompt)
-#
-#         while True:
-#             schedule.run_pending()
-#             time.sleep(1)
+    def __init__(self, notification_time='09:00'):
+        self.subscribers = set()
+        self.notification_time = notification_time  #<type 'str'>
 
+    def get_data(self, interval, obj):
+        finder = BdayFinder(obj, interval)
+        result = finder.creating_users_list()
+        if result:
+            self.notify(result)
 
+        return result
+
+    def subscribe(self, subscriber):
+        self.subscribers.add(subscriber)
+
+    def unsubcribe(self, subscriber):
+        self.subscribers.remove(subscriber)
+
+    def notify(self, message):
+        for subscriber in self.subscribers:
+            pass #будет создаваться индивидуальная очередь по имени клиента и сообщение будет дублироваться в каждую очередь
