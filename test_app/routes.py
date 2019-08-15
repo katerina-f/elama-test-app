@@ -11,7 +11,8 @@ from test_app.app import logger
 
 from test_app.user.models import User
 
-from test_app.reminder.reminder import BdayNotificator
+from test_app.reminder.reminder import Postman
+
 
 from test_app.extensions import db
 
@@ -44,15 +45,19 @@ def add_user():
 def added_user():
     user = User(first_name=request.form['First name'], last_name=request.form['Last name'], birth_date=request.form['birthday'])
     db.session.add(user)
+
     try:
         db.session.commit()
+
     except OperationalError as ex:
         logger.warning('Произошла ошибка подключения к базе данных')
         return jsonify({'error': "Bad connection. Try again later."})
+
     except DataError as ex:
         db.session.rollback()
         logger.warning('Были введены неверные данные')
         return jsonify({'error': "Data Format Error"})
+
     except IntegrityError as ex:
         db.session.rollback()
         logger.warning('Была попытка добавить существующего пользователя')
@@ -64,8 +69,8 @@ def added_user():
 @app.route('/get_birthdays', methods=['GET'])
 @logger.catch(level='ERROR')
 def create_notification():
-    notificator = BdayNotificator(User, interval=(0, 1))
-    data = notificator.bd_prompt()
+    notificator = Postman('14:44')
+    data = notificator.get_data((0,1), User)
     if any(data):
         return render_template('birthdays.html', users_list=data)
     else:
