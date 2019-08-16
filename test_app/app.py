@@ -3,7 +3,9 @@ from flask import Flask
 from loguru import logger
 
 from test_app.extensions import db
+from test_app.extensions import mail
 from test_app.config import DevelopmentConfig
+
 
 def create_app():
     app = Flask(__name__)
@@ -14,12 +16,17 @@ def create_app():
                rotation='1 week', catch=True)
 
     register_extensions(app)
+    register_mail(app)
 
     return app
 
 
 def register_extensions(app):
     db.init_app(app)
+
+
+def register_mail(app):
+    mail.init_app(app)
 
 
 app = create_app()
