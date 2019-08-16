@@ -3,6 +3,7 @@ Flask-SQLAlchemy
 Flask-Script
 Flask-Migrate
 Flask-Assets
+Flask-Mail
 psycopg2-binary
 schedule
 daemon
@@ -10,3 +11,4 @@ lockfile
 loguru
 jsmin
 cssmin
+pika
