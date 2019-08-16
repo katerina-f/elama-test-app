@@ -2,18 +2,13 @@ import os
 import signal
 import daemon
 import lockfile
+from test_app.app import app
 
-from spam import (
-    initial_program_setup,
-    do_main_program,
-    program_cleanup,
-    reload_program_config,
-    )
 
 context = daemon.DaemonContext(
-    working_directory='/',
+    working_directory='/var/lib/runserver',
     umask=0o002,
-    pidfile=lockfile.FileLock('/notificator.pid'),
+    pidfile=lockfile.FileLock('/var/run/notificator.pid'),
     )
 
 context.signal_map = {
@@ -24,11 +19,8 @@ context.signal_map = {
 
 context.uid = os.getuid()
 
-important_file = open('spam.data', 'w')
-interesting_file = open('eggs.data', 'w')
-context.files_preserve = [important_file, interesting_file]
-
-initial_program_setup()
+log_file = open('log.log', 'w')
+context.files_preserve = [log_file]
 
 with context:
-    do_main_program()
+    app.run()
