@@ -1,8 +1,12 @@
 from datetime import datetime
 from datetime import timedelta
+import sys
+
 
 from sqlalchemy import and_
 from sqlalchemy import extract
+
+import pika
 
 
 class BdayFinder:
@@ -39,11 +43,11 @@ class Postman:
         self.subscribers = set()
         self.notification_time = notification_time  #<type 'str'>
 
-    def get_data(self, interval, obj):
+    def get_data(self, interval, obj, connection):
         finder = BdayFinder(obj, interval)
         result = finder.creating_users_list()
         if result:
-            self.notify(result)
+            self.notify(connection, result)
 
         return result
 
@@ -53,6 +57,18 @@ class Postman:
     def unsubcribe(self, subscriber):
         self.subscribers.remove(subscriber)
 
-    def notify(self, message):
+    def create_queue(self, subscriber, connection):
+        channel = connection.channel()
+        channel.queue_declare(queue=subscriber.__str__(), durable=True)
+
+        return channel
+
+    def notify(self, connection, message):
         for subscriber in self.subscribers:
-            pass #будет создаваться индивидуальная очередь по имени клиента и сообщение будет дублироваться в каждую очередь
+            channel = self.create_queue(subscriber, connection)
+            channel.basic_publish(exchange='',
+                                  routing_key=subscriber.__name__,
+                                  body=message,
+                                  properties=pika.BasicProperties(
+                                      delivery_mode=2,  # make message persistent
+                                  ))
