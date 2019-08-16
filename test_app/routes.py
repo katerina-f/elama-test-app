@@ -10,10 +10,7 @@ from test_app.app import app
 from test_app.app import logger
 
 from test_app.user.models import User
-
 from test_app.reminder.reminder import Postman
-
-
 from test_app.extensions import db
 
 
@@ -69,8 +66,9 @@ def added_user():
 @app.route('/get_birthdays', methods=['GET'])
 @logger.catch(level='ERROR')
 def create_notification():
+    connection = None  #вообще пока ничего не делает
     notificator = Postman('14:44')
-    data = notificator.get_data((0,1), User)
+    data = notificator.get_data(app.config['INTERVAL'], User, connection)
     if any(data):
         return render_template('birthdays.html', users_list=data)
     else:
