@@ -16,16 +16,12 @@ def create_app():
                rotation='1 week', catch=True)
 
     register_extensions(app)
-    register_mail(app)
 
     return app
 
 
 def register_extensions(app):
     db.init_app(app)
-
-
-def register_mail(app):
     mail.init_app(app)
 
 
