@@ -18,6 +18,7 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     INTERVAL = (0,1)
+    NOTIFICATION_TIME = os.environ.get('NOTIFICATION_TIME')
 
 class DevelopmentConfig(Config):
     DEBUG = True
