@@ -1,8 +1,8 @@
 from abc import ABC
 from abc import abstractmethod
 import json
-from threading import Thread
 from datetime import datetime
+import os
 
 from flask_mail import Message
 from flask import render_template
@@ -36,35 +36,37 @@ class EmailClient(AbstractClient):
     def __init__(self):
         pass
 
-    @logger.catch(level='ERROR')
     def update(self, message, recipients):
         with app.app_context():
-            msg = Message('Birthdays', sender='katyfr0lova@yandex.ru', recipients=recipients)
+            msg = Message('Birthdays', sender=app.config['MAIL_USERNAME'], recipients=recipients)
             msg.html = render_template('birthdays.html', users_list=message)
             try:
                 mail.send(msg)
-            except:
+                logger.warning('сообщение отправлено')
+            except Exception:
+                logger.warning(Exception)
                 print('something wrong', datetime.now())
 
     def callback(self, ch, method, properties, body):
+        logger.warning('подключение прошло успешно')
         recipients = ['ekaterina.frolova40@gmail.com', 'katyfr0lova@yandex.ru']
         msg_body = self.parsing_request(body)
-        thr = Thread(target=self.update, args=[msg_body, recipients])
-        thr.start()
+        self.update(msg_body, recipients)
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
+    @logger.catch(level='ERROR')
     def subscribe_to_queue(self):
         connection = pika.BlockingConnection(pika.ConnectionParameters(
-            host='localhost'))
+            host='0.0.0.0'))
         channel = connection.channel()
 
         channel.queue_declare(queue=__class__.__name__, durable=True)
-
         channel.basic_qos(prefetch_count=1)
         channel.basic_consume(__class__.__name__, self.callback, auto_ack=False)
         try:
             channel.start_consuming()
-        except KeyboardInterrupt:
+        except:
+            logger.warning('не удалось подключиться')
             channel.stop_consuming()
             connection.close()
 

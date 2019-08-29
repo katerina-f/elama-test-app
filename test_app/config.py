@@ -9,7 +9,7 @@ class Config(object):
     LOGFILE = "log.log"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{}:{}@{}/{}'.format(
-        'test', '1234', 'localhost', 'postgres')
+        'test', '1234', '0.0.0.0', 'postgres')
 
     MAIL_SERVER = 'smtp.yandex.ru'
     MAIL_PORT = 465
