@@ -44,7 +44,7 @@ class EmailClient(AbstractClient):
                 mail.send(msg)
                 logger.warning('сообщение отправлено')
             except Exception:
-                logger.warning(Exception)
+                logger.warning(Exception.__str__(self))
                 print('something wrong', datetime.now())
 
     def callback(self, ch, method, properties, body):
