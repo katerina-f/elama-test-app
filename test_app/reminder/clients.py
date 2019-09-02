@@ -65,6 +65,7 @@ class EmailClient(AbstractClient):
         channel.basic_consume(__class__.__name__, self.callback, auto_ack=False)
         try:
             channel.start_consuming()
+            connection.close()
         except:
             logger.warning('не удалось отправить сообщение. соединение отключено')
             channel.stop_consuming()

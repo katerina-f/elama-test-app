@@ -12,3 +12,4 @@ loguru
 jsmin
 cssmin
 pika
+pylint

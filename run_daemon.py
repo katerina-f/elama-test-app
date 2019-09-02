@@ -1,26 +1,30 @@
 import os
-import signal
 import daemon
 import lockfile
-from test_app.app import app
+import schedule
+import time
 
+from test_app.reminder.send_notifications import send_notifications
 
 context = daemon.DaemonContext(
-    working_directory='/var/lib/runserver',
+    working_directory='/vagrant',
     umask=0o002,
     pidfile=lockfile.FileLock('/var/run/notificator.pid'),
     )
 
-context.signal_map = {
-    signal.SIGTERM: program_cleanup,
-    signal.SIGHUP: 'terminate',
-    signal.SIGUSR1: reload_program_config,
-    }
+# context.signal_map = {
+#     signal.SIGTERM: program_cleanup,
+#     signal.SIGHUP: 'terminate',
+#     signal.SIGUSR1: reload_program_config,
+#     }
 
 context.uid = os.getuid()
 
-log_file = open('log.log', 'w')
+log_file = open('log.log', 'r+')
 context.files_preserve = [log_file]
 
-with context:
-    app.run()
+with daemon.DaemonContext():
+    schedule.every(1).minute.do(send_notifications)
+    while 1:
+        schedule.run_pending()
+        time.sleep(1)

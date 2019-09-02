@@ -7,7 +7,7 @@ from test_app.app import logger
 
 def main():
     try:
-        schedule.every(2).minutes.do(send_notifications)
+        schedule.every(10).minutes.do(send_notifications)
         while 1:
             schedule.run_pending()
             time.sleep(1)

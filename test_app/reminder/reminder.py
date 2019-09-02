@@ -22,7 +22,8 @@ class BdayFinder:
         b_month = extract('month', self.obj.birth_date)
 
         users = self.obj.query.filter(and_(b_day == date.day, b_month == date.month))
-
+        if not users:
+            return
 
         users = [{'bdate': '{}'.format(user.birth_date),
                   'first_name': '{}'.format(user.first_name),
@@ -32,7 +33,7 @@ class BdayFinder:
 
     def creating_users_list(self):
         users_list = {'all_dates': [{'date': date, 'users': self.find_users_for_date(date)} for date in self.interval]}
-        if any(users_list):
+        if any(users_list['all_dates'][i]['users'] for i in range(len(users_list['all_dates']))):
             return json.dumps(users_list)
         else:
             return {}
